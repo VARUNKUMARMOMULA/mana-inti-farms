@@ -1,26 +1,131 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfbf7; /* Warm Cream */
+  --foreground: #2d2b28; /* Soft Charcoal */
+  
+  --primary: #1e3f20; /* Deep Forest Green */
+  --primary-hover: #2d5a27;
+  --secondary: #5c3d2e; /* Earthy Brown */
+  --secondary-hover: #3e2723;
+  --accent: #ff6f00; /* Warm Orange */
+  --accent-hover: #e6a100; /* Amber Yellow */
+  --cream: #fdfbf7;
+  --cream-dark: #f5ebd6;
+  --white: #ffffff;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-cream: var(--cream);
+  --color-cream-dark: var(--cream-dark);
+  
+  --font-display: var(--font-cormorant), serif;
+  --font-body: var(--font-poppins), sans-serif;
+  
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-slide-up: slide-up 0.6s ease-out forwards;
+  --animate-slide-in-right: slide-in-right 0.5s ease-out forwards;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cream-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Premium Grassmorphism Card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 32px 0 rgba(92, 61, 46, 0.05);
+}
+
+/* Print Invoice Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-container, .print-container * {
+    visibility: visible;
+  }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+.glass-card-dark {
+  background: rgba(30, 63, 32, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(30, 63, 32, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(30, 63, 32, 0.05);
 }

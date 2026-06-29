@@ -32,7 +32,9 @@ create table if not exists public.orders (
     delivery_charge numeric not null default 0 check (delivery_charge >= 0),
     payment_method text not null check (payment_method in ('COD', 'UPI')),
     notes text,
-    status text not null default 'pending' check (status in ('pending', 'completed', 'cancelled')),
+    status text not null default 'placed' check (status in ('placed', 'packed', 'transit', 'delivery', 'delivered', 'cancelled')),
+    estimated_delivery text,
+    admin_notes text,
     created_at timestamp with time zone default timezone('utc'::text, now()) not null,
     updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -77,6 +79,11 @@ to authenticated
 using (true) 
 with check (true);
 
+-- 3. Public can select orders (filtered by client-side query)
+create policy "Allow public to select orders" 
+on public.orders for select 
+using (true);
+
 -- Settings Policies:
 -- 1. Public can read settings
 create policy "Allow public to view settings" 
@@ -86,6 +93,33 @@ using (true);
 -- 2. Authenticated users (admin) can update settings
 create policy "Allow authenticated admin full access to settings" 
 on public.settings for all 
+to authenticated 
+using (true) 
+with check (true);
+
+-- Create CONTACT MESSAGES table
+create table if not exists public.contact_messages (
+    id uuid default uuid_generate_v4() primary key,
+    customer_name text not null,
+    customer_phone text not null,
+    customer_email text not null,
+    subject text not null,
+    customer_message text not null,
+    is_read boolean default false,
+    is_important boolean default false,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on contact_messages
+alter table public.contact_messages enable row level security;
+
+-- Policies for contact_messages
+create policy "Allow public to insert contact messages" 
+on public.contact_messages for insert 
+with check (true);
+
+create policy "Allow authenticated admin full access to contact messages" 
+on public.contact_messages for all 
 to authenticated 
 using (true) 
 with check (true);
@@ -114,3 +148,63 @@ values
 ('social_links', '{"facebook": "#", "instagram": "#", "youtube": "#"}'::jsonb),
 ('seo_settings', '{"title": "Mana Inti Farms | Fresh Country Eggs & Chicken Hyderabad", "description": "Experience the unmatched taste of premium country eggs and pre-dressed country chicken. Raised ethically in our free-range farm, completely antibiotic-free."}'::jsonb)
 on conflict (key) do update set value = excluded.value;
+-- Create MEDIA ASSETS table
+create table if not exists public.media_assets (
+    id uuid default uuid_generate_v4() primary key,
+    name text not null,
+    url text not null,
+    category text not null check (category in ('branding', 'homepage', 'products', 'sections', 'system')),
+    alt_text text,
+    created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on media_assets
+alter table public.media_assets enable row level security;
+
+-- Policies for media_assets
+create policy "Allow public to view media assets" 
+on public.media_assets for select 
+using (true);
+
+create policy "Allow authenticated admin full access to media assets" 
+on public.media_assets for all 
+to authenticated 
+using (true) 
+with check (true);
+
+-- Create SOCIAL MEDIA SETTINGS table
+create table if not exists public.social_media_settings (
+    id uuid default uuid_generate_v4() primary key,
+    platform text not null unique,
+    url text not null,
+    enabled boolean default true,
+    icon_name text not null,
+    updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Enable RLS on social_media_settings
+alter table public.social_media_settings enable row level security;
+
+-- Policies for social_media_settings
+create policy "Allow public to view social media settings" 
+on public.social_media_settings for select 
+using (true);
+
+create policy "Allow authenticated admin full access to social media settings" 
+on public.social_media_settings for all 
+to authenticated 
+using (true) 
+with check (true);
+
+-- Seed default social settings
+insert into public.social_media_settings (platform, url, enabled, icon_name)
+values
+('Facebook', 'https://facebook.com/manaintifarms', true, 'facebook'),
+('Instagram', 'https://instagram.com/manaintifarms', true, 'instagram'),
+('YouTube', 'https://youtube.com/@manaintifarms', true, 'youtube'),
+('WhatsApp', 'https://wa.me/917981544848', true, 'whatsapp'),
+('X (Twitter)', '', false, 'twitter'),
+('LinkedIn', '', false, 'linkedin'),
+('Telegram', '', false, 'telegram')
+on conflict (platform) do nothing;
+
