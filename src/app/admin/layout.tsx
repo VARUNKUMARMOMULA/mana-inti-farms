@@ -49,7 +49,8 @@ export default function AdminLayout({
 
   const handleLogout = async () => {
     await dbService.signOutAdmin();
-    document.cookie = 'mif_admin_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+    const secureFlag = window.location.protocol === 'https:' ? '; Secure; SameSite=Lax' : '';
+    document.cookie = `mif_admin_logged_in=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;${secureFlag}`;
     router.push('/admin/login');
     router.refresh();
   };
@@ -174,7 +175,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-grow p-6 md:p-8 overflow-y-auto h-screen">
+      <main className="flex-grow p-6 md:p-8 md:overflow-y-auto md:h-screen">
         {children}
       </main>
       

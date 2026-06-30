@@ -125,9 +125,9 @@ export default function AdminImages() {
 
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload failed:', err);
-      alert('Failed to upload image.');
+      alert('Failed to upload image: ' + (err.message || JSON.stringify(err)));
     } finally {
       setUploading(false);
     }

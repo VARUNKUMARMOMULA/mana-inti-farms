@@ -120,9 +120,9 @@ export default function AdminContent() {
       const urlWithCacheBuster = `${url}?t=${Date.now()}`;
 
       setDraftContent((prev) => prev ? { ...prev, [field]: urlWithCacheBuster } : null);
-    } catch (e) {
+    } catch (e: any) {
       console.error('Image upload failed:', e);
-      alert('Failed to upload image. Please try again.');
+      alert('Failed to upload image: ' + (e.message || JSON.stringify(e)));
     } finally {
       setUploadingField(null);
     }

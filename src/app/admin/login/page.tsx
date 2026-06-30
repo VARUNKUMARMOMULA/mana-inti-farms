@@ -67,10 +67,12 @@ export default function AdminLoginPage() {
   }, [lockoutTime]);
 
   const handleLogin = async (e: React.FormEvent) => {
+    console.log('🔑 handleLogin event handler fired!', { email, password });
     e.preventDefault();
 
     // Prevent submission if locked out
     if (lockoutTime && lockoutTime > Date.now()) {
+      console.warn('🔒 Lockout active, blocking login');
       setError(`Account is locked. Please try again in ${timeLeft}s.`);
       return;
     }
@@ -79,19 +81,22 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
+      console.log('📡 Calling dbService.signInAdmin...');
       const result = await dbService.signInAdmin(email, password);
+      console.log('📥 dbService.signInAdmin result:', result);
       if (result.success) {
         // Reset attempts
         localStorage.removeItem('mif_failed_attempts');
         localStorage.removeItem('mif_lockout_until');
 
-        // Set mock session cookie if in mock mode to satisfy middleware
-        if (dbService.isMockMode) {
-          document.cookie = 'mif_admin_logged_in=true; path=/; max-age=86400';
-        }
+        // Set session cookie to satisfy middleware
+        const secureFlag = window.location.protocol === 'https:' ? '; Secure; SameSite=Lax' : '';
+        document.cookie = `mif_admin_logged_in=true; path=/; max-age=86400${secureFlag}`;
+        console.log('✅ Redirecting to /admin...');
         router.push('/admin');
         router.refresh();
       } else {
+        console.warn('❌ Login failed:', result.error);
         // Increment attempts
         const attempts = parseInt(localStorage.getItem('mif_failed_attempts') || '0', 10) + 1;
         localStorage.setItem('mif_failed_attempts', attempts.toString());
@@ -107,6 +112,7 @@ export default function AdminLoginPage() {
         }
       }
     } catch (err: any) {
+      console.error('💥 Exception in handleLogin:', err);
       setError(err.message || 'An error occurred during login');
     } finally {
       setLoading(false);

@@ -281,7 +281,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
       return { success: true, order: createdOrder, whatsappUrl };
     } catch (err: any) {
-      console.error('Error placing order:', err);
+      console.error('Error placing order:', err.message || err);
       return { success: false, error: err.message || 'Failed to place order.' };
     }
   };

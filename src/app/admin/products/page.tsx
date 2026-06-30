@@ -167,9 +167,9 @@ export default function AdminProducts() {
 
       setIsModalOpen(false);
       fetchProducts();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error saving product:', err);
-      alert('Failed to save product');
+      alert(`Failed to save product: ${err.message || JSON.stringify(err)}`);
     }
   };
 
@@ -490,9 +490,9 @@ export default function AdminProducts() {
                               const fileName = `product_${Date.now()}.jpg`;
                               const url = await dbService.uploadImage(compressedFile, 'mif-assets', fileName);
                               setFormData(prev => ({ ...prev, image_url: url }));
-                            } catch (err) {
+                            } catch (err: any) {
                               console.error('Error uploading product image:', err);
-                              alert('Failed to upload product image.');
+                              alert('Failed to upload product image: ' + (err.message || JSON.stringify(err)));
                             } finally {
                               setUploadingImage(false);
                             }

@@ -337,13 +337,13 @@ export default function HomePage() {
           </div>
 
           {loadingProducts ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {[1, 2, 3].map((n) => (
                 <div key={n} className="bg-white h-96 rounded-2xl animate-pulse border border-cream-dark/25" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredProducts.map((product, index) => (
                 <motion.div
                   key={product.id}

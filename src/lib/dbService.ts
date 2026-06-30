@@ -2,6 +2,18 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { Product, Order, StoreSettings, DashboardStats, Review, HomepageContent, ContactMessage, MediaAsset, SocialLink } from './types';
 import { generateOrderNumber } from './utils';
 
+// Helper to generate a compliant UUIDv4 on the client side
+const generateUUID = (): string => {
+  if (typeof window !== 'undefined' && window.crypto && window.crypto.randomUUID) {
+    return window.crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export const DEFAULT_HOMEPAGE_CONTENT: HomepageContent = {
   // Hero
   hero_title: 'Farm Fresh Country Eggs & Country Chicken',
@@ -393,6 +405,12 @@ export const dbService = {
 
   async updateProduct(product: Product): Promise<Product> {
     if (isSupabaseConfigured && supabase) {
+      // Validate UUID format to prevent database syntax errors
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(product.id)) {
+        throw new Error(`Invalid product ID format. Expected a valid UUID.`);
+      }
+
       const { data, error } = await supabase
         .from('products')
         .update({
@@ -425,22 +443,28 @@ export const dbService = {
   },
 
   async createProduct(product: Omit<Product, 'id'>): Promise<Product> {
+    console.log('📡 dbService.createProduct called with payload:', product);
+    const newProduct: Product = {
+      ...product,
+      id: generateUUID(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
     if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('products')
-        .insert([product])
+        .insert([newProduct])
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase product insert error:', error);
+        throw error;
+      }
+      console.log('📥 Supabase product insert success:', data);
       return data;
     } else {
       const products = getLocalData<Product[]>('mif_products', SEED_PRODUCTS);
-      const newProduct: Product = {
-        ...product,
-        id: 'p_' + Math.random().toString(36).substr(2, 9),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      };
       products.push(newProduct);
       setLocalData('mif_products', products);
       return newProduct;
@@ -449,6 +473,13 @@ export const dbService = {
 
   async deleteProduct(id: string): Promise<void> {
     if (isSupabaseConfigured && supabase) {
+      // Validate UUID format to prevent database syntax errors on legacy/mock IDs
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(id)) {
+        console.warn(`⚠️ Skipping Supabase delete: ID "${id}" is not a valid UUID.`);
+        return; // Gracefully skip since it doesn't exist in the Postgres UUID table
+      }
+
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
     } else {
@@ -500,7 +531,7 @@ export const dbService = {
     const created_at = new Date().toISOString();
     const newOrder: Order = {
       ...orderInput,
-      id: isSupabaseConfigured ? undefined as any : 'o_' + Math.random().toString(36).substr(2, 9),
+      id: generateUUID(),
       order_number,
       status: 'placed',
       created_at,
@@ -512,7 +543,10 @@ export const dbService = {
         .insert([newOrder])
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase order insert error:', error);
+        throw error;
+      }
       return data;
     } else {
       const orders = getLocalData<Order[]>('mif_orders', []);
@@ -613,11 +647,23 @@ export const dbService = {
 
   // --- AUTHENTICATION (ADMIN) ---
   async signInAdmin(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+    console.log('🔌 dbService.signInAdmin called', { email, isSupabaseConfigured, hasSupabaseClient: !!supabase });
     if (isSupabaseConfigured && supabase) {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { success: false, error: error.message };
-      return { success: true };
+      try {
+        console.log('📡 Calling supabase.auth.signInWithPassword...');
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        console.log('📥 Supabase auth response:', { data, error });
+        if (error) return { success: false, error: error.message };
+        
+        // Set local session flag as a fallback/sync helper
+        setLocalData('mif_admin_session', 'true');
+        return { success: true };
+      } catch (err: any) {
+        console.error('💥 Exception in supabase.auth.signInWithPassword:', err);
+        return { success: false, error: err.message || 'Supabase authentication failed' };
+      }
     } else {
+      console.log('⚠️ Running in Mock Mode, checking mock credentials...');
       // Mock credentials: admin@manaintifarms.com / admin123
       if (email === 'admin@manaintifarms.com' && password === 'admin123') {
         setLocalData('mif_admin_session', 'true');
@@ -628,20 +674,35 @@ export const dbService = {
   },
 
   async signOutAdmin(): Promise<void> {
+    setLocalData('mif_admin_session', 'false');
     if (isSupabaseConfigured && supabase) {
       await supabase.auth.signOut();
-    } else {
-      setLocalData('mif_admin_session', 'false');
     }
   },
 
   async isAdminAuthenticated(): Promise<boolean> {
+    // 1. Check if Supabase session is active
     if (isSupabaseConfigured && supabase) {
-      const { data: { session } } = await supabase.auth.getSession();
-      return !!session;
-    } else {
-      return getLocalData<string>('mif_admin_session', 'false') === 'true';
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) return true;
+      } catch (e) {
+        console.error('Error getting Supabase session:', e);
+      }
     }
+    
+    // 2. Fallback to cookie check or localStorage check to avoid redirect loops
+    if (typeof window !== 'undefined') {
+      // Check for the admin logged in cookie
+      const hasCookie = document.cookie.split(';').some(c => c.trim().startsWith('mif_admin_logged_in='));
+      if (hasCookie) return true;
+
+      // Check for the mock session in localStorage
+      const mockSession = localStorage.getItem('mif_admin_session');
+      if (mockSession === 'true' || mockSession === '"true"') return true;
+    }
+
+    return false;
   },
 
   // --- HOMEPAGE CONTENT & MEDIA ---
@@ -671,12 +732,16 @@ export const dbService = {
   },
 
   async uploadImage(file: File, bucket: string, path: string): Promise<string> {
+    console.log('📡 dbService.uploadImage called', { bucket, path, fileType: file.type, fileSize: file.size });
     if (isSupabaseConfigured && supabase) {
       // Upload to Supabase Storage
       const { data, error } = await supabase.storage
         .from(bucket)
         .upload(path, file, { upsert: true });
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Supabase storage upload error:', error);
+        throw error;
+      }
       
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
