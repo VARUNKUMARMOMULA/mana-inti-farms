@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Poppins } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/context/StoreContext';
 import { BASE_URL } from '@/lib/utils';
+import Script from 'next/script';
 
 // Load Google Fonts
 const cormorant = Cormorant_Garamond({
@@ -67,6 +68,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${cormorant.variable} ${poppins.variable}`}>
       <body className="antialiased min-h-screen bg-cream text-foreground">
+        {/* Google Analytics GA4 Setup */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-GKNPVBW3CD"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-GKNPVBW3CD');
+          `}
+        </Script>
+
         <StoreProvider>
           {children}
         </StoreProvider>
