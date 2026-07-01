@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { useStore } from '@/context/StoreContext';
-import { formatINR } from '@/lib/utils';
+import { formatINR, BASE_URL } from '@/lib/utils';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
 import { HenIcon, BasketIcon, EggIcon } from '@/components/ui/Icons';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,7 +44,7 @@ export default function ProductsClient() {
       'item': {
         '@type': 'Product',
         'name': product.name,
-        'image': product.image_url || 'https://manaintifarms.com/images/og-image.jpg',
+        'image': product.image_url || `${BASE_URL}/images/og-image.jpg`,
         'description': product.description,
         'offers': {
           '@type': 'Offer',
@@ -52,7 +52,7 @@ export default function ProductsClient() {
           'priceCurrency': 'INR',
           'availability': product.in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
           'priceValidUntil': `${new Date().getFullYear() + 1}-12-31`,
-          'url': 'https://manaintifarms.com/products'
+          'url': `${BASE_URL}/products`
         }
       }
     }))

@@ -1,17 +1,42 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Delivery Policy | Mana Inti Farms',
   description: 'Learn about our delivery zones in Hyderabad (Bowrampet, Gachibowli, Miyapur, etc.), schedules, same-day delivery slots, packaging, and free delivery options.',
   alternates: {
-    canonical: 'https://manaintifarms.com/delivery-policy',
+    canonical: `${BASE_URL}/delivery-policy`,
   },
 };
 
 export default function DeliveryPolicyPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Delivery Policy',
+        'item': `${BASE_URL}/delivery-policy`,
+      },
+    ],
+  };
+
   return (
-    <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
       <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary mb-8 tracking-tight border-b border-cream-dark/30 pb-4">
         Delivery Policy
       </h1>
@@ -61,5 +86,6 @@ export default function DeliveryPolicyPage() {
         </section>
       </div>
     </div>
-  );
+  </>
+);
 }

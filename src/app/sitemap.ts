@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { BASE_URL } from '@/lib/utils';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://manaintifarms.com';
+  const baseUrl = BASE_URL;
   const lastModified = new Date();
 
   const routes = [

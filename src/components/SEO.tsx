@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Product } from '@/lib/types';
+import { BASE_URL } from '@/lib/utils';
 
 interface SEOLDProps {
   type: 'business' | 'products' | 'breadcrumb';
@@ -17,9 +18,9 @@ export default function StructuredData({ type, productsList = [], breadcrumbs = 
       '@context': 'https://schema.org',
       '@type': 'LocalBusiness',
       name: 'Mana Inti Farms',
-      image: 'https://manaintifarms.com/images/og-image.jpg',
-      '@id': 'https://manaintifarms.com/#localbusiness',
-      url: 'https://manaintifarms.com',
+      image: `${BASE_URL}/images/og-image.jpg`,
+      '@id': `${BASE_URL}/#localbusiness`,
+      url: BASE_URL,
       telephone: '+917981544848',
       priceRange: '₹₹',
       address: {
@@ -65,9 +66,9 @@ export default function StructuredData({ type, productsList = [], breadcrumbs = 
         position: index + 1,
         item: {
           '@type': 'Product',
-          '@id': `https://manaintifarms.com/products/#${product.id}`,
+          '@id': `${BASE_URL}/products/#${product.id}`,
           name: product.name,
-          image: product.image_url || 'https://manaintifarms.com/images/placeholder-chicken.jpg',
+          image: product.image_url || `${BASE_URL}/images/placeholder-chicken.jpg`,
           description: product.description,
           offers: {
             '@type': 'Offer',
@@ -77,7 +78,7 @@ export default function StructuredData({ type, productsList = [], breadcrumbs = 
             availability: product.in_stock
               ? 'https://schema.org/InStock'
               : 'https://schema.org/OutOfStock',
-            url: `https://manaintifarms.com/products`,
+            url: `${BASE_URL}/products`,
           },
         },
       })),

@@ -1,17 +1,42 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Refund & Cancellation Policy | Mana Inti Farms',
   description: 'Read our policy on order cancellations, quality concerns, replacements for broken eggs or transit damage, and refund processing timelines.',
   alternates: {
-    canonical: 'https://manaintifarms.com/refund-policy',
+    canonical: `${BASE_URL}/refund-policy`,
   },
 };
 
 export default function RefundPolicyPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Refund & Cancellation Policy',
+        'item': `${BASE_URL}/refund-policy`,
+      },
+    ],
+  };
+
   return (
-    <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
       <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary mb-8 tracking-tight border-b border-cream-dark/30 pb-4">
         Cancellation & Refund Policy
       </h1>
@@ -70,5 +95,6 @@ export default function RefundPolicyPage() {
         </section>
       </div>
     </div>
-  );
+  </>
+);
 }

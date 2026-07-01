@@ -1,17 +1,42 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Terms of Service | Mana Inti Farms',
   description: 'Review the rules and guidelines for using the Mana Inti Farms website, ordering farm-fresh chicken and eggs, pricing, and payments.',
   alternates: {
-    canonical: 'https://manaintifarms.com/terms',
+    canonical: `${BASE_URL}/terms`,
   },
 };
 
 export default function TermsPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Terms of Service',
+        'item': `${BASE_URL}/terms`,
+      },
+    ],
+  };
+
   return (
-    <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
       <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary mb-8 tracking-tight border-b border-cream-dark/30 pb-4">
         Terms of Service
       </h1>
@@ -67,5 +92,6 @@ export default function TermsPage() {
         </section>
       </div>
     </div>
-  );
+  </>
+);
 }

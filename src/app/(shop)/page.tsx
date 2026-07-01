@@ -1,11 +1,12 @@
 import { Metadata } from 'next';
 import HomeClient from './HomeClient';
+import { BASE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Mana Inti Farms | Fresh Country Eggs & Chicken Hyderabad',
   description: 'Experience the unmatched taste of premium country eggs and pre-dressed country chicken. Raised ethically in our free-range farm in Bowrampet, completely antibiotic-free.',
   alternates: {
-    canonical: 'https://manaintifarms.com',
+    canonical: BASE_URL,
   },
 };
 
@@ -15,10 +16,10 @@ export default function HomePage() {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     'name': 'Mana Inti Farms',
-    'image': 'https://manaintifarms.com/images/og-image.jpg',
+    'image': `${BASE_URL}/images/og-image.jpg`,
     'telephone': '+917981544848',
     'email': 'sampyadav12@gmail.com',
-    'url': 'https://manaintifarms.com',
+    'url': BASE_URL,
     'priceRange': '$$',
     'address': {
       '@type': 'PostalAddress',
@@ -53,11 +54,28 @@ export default function HomePage() {
     ],
   };
 
+  // Construct Organization JSON-LD schema
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': 'Mana Inti Farms',
+    'url': BASE_URL,
+    'logo': `${BASE_URL}/favicon.ico`,
+    'sameAs': [
+      'https://www.facebook.com/manaintifarms',
+      'https://www.instagram.com/manaintifarms',
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
       />
       <HomeClient />
     </>

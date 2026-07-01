@@ -62,3 +62,10 @@ export function formatDate(dateStr: string): string {
     hour12: true,
   });
 }
+
+/**
+ * Global Base URL for canonical tags, sitemaps, and robots.txt
+ */
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ||
+  'https://mana-inti-farms.vercel.app';

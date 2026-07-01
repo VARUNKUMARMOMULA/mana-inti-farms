@@ -1,7 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, Poppins } from 'next/font/google';
 import './globals.css';
 import { StoreProvider } from '@/context/StoreContext';
+import { BASE_URL } from '@/lib/utils';
 
 // Load Google Fonts
 const cormorant = Cormorant_Garamond({
@@ -18,17 +19,23 @@ const poppins = Poppins({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: 'Mana Inti Farms | Fresh Country Eggs & Chicken Hyderabad',
   description: 'Experience the unmatched taste of premium country eggs and pre-dressed country chicken. Raised ethically in our free-range farm, completely antibiotic-free.',
   keywords: ['country eggs', 'country chicken', 'organic farm', 'free range eggs', 'hyderabad', 'bowrampet', 'antibiotic free chicken', 'fresh country eggs'],
   authors: [{ name: 'Mana Inti Farms' }],
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
   robots: 'index, follow',
   openGraph: {
     title: 'Mana Inti Farms | Fresh Country Eggs & Chicken Hyderabad',
     description: 'Experience the unmatched taste of premium country eggs and pre-dressed country chicken. Raised ethically in our free-range farm, completely antibiotic-free.',
-    url: 'https://manaintifarms.com',
+    url: BASE_URL,
     siteName: 'Mana Inti Farms',
     images: [
       {
@@ -48,7 +55,7 @@ export const metadata: Metadata = {
     images: ['/images/og-image.jpg'],
   },
   alternates: {
-    canonical: 'https://manaintifarms.com',
+    canonical: BASE_URL,
   },
 };
 

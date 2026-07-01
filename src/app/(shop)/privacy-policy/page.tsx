@@ -1,17 +1,42 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { BASE_URL } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Mana Inti Farms',
   description: 'Understand how Mana Inti Farms handles your order information, name, phone number, address, and browser cookies. Your privacy is our priority.',
   alternates: {
-    canonical: 'https://manaintifarms.com/privacy-policy',
+    canonical: `${BASE_URL}/privacy-policy`,
   },
 };
 
 export default function PrivacyPolicyPage() {
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Privacy Policy',
+        'item': `${BASE_URL}/privacy-policy`,
+      },
+    ],
+  };
+
   return (
-    <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <div className="py-12 sm:py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 font-body text-left">
       <h1 className="font-display font-bold text-3xl sm:text-4xl text-primary mb-8 tracking-tight border-b border-cream-dark/30 pb-4">
         Privacy Policy
       </h1>
@@ -72,5 +97,6 @@ export default function PrivacyPolicyPage() {
         </section>
       </div>
     </div>
-  );
+  </>
+);
 }
