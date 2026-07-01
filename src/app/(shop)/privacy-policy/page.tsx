@@ -1,6 +1,13 @@
-'use client';
-
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Mana Inti Farms',
+  description: 'Understand how Mana Inti Farms handles your order information, name, phone number, address, and browser cookies. Your privacy is our priority.',
+  alternates: {
+    canonical: 'https://manaintifarms.com/privacy-policy',
+  },
+};
 
 export default function PrivacyPolicyPage() {
   return (

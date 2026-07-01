@@ -1,6 +1,13 @@
-'use client';
-
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Refund & Cancellation Policy | Mana Inti Farms',
+  description: 'Read our policy on order cancellations, quality concerns, replacements for broken eggs or transit damage, and refund processing timelines.',
+  alternates: {
+    canonical: 'https://manaintifarms.com/refund-policy',
+  },
+};
 
 export default function RefundPolicyPage() {
   return (

@@ -1,6 +1,13 @@
-'use client';
-
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Delivery Policy | Mana Inti Farms',
+  description: 'Learn about our delivery zones in Hyderabad (Bowrampet, Gachibowli, Miyapur, etc.), schedules, same-day delivery slots, packaging, and free delivery options.',
+  alternates: {
+    canonical: 'https://manaintifarms.com/delivery-policy',
+  },
+};
 
 export default function DeliveryPolicyPage() {
   return (

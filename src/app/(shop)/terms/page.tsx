@@ -1,6 +1,13 @@
-'use client';
-
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Mana Inti Farms',
+  description: 'Review the rules and guidelines for using the Mana Inti Farms website, ordering farm-fresh chicken and eggs, pricing, and payments.',
+  alternates: {
+    canonical: 'https://manaintifarms.com/terms',
+  },
+};
 
 export default function TermsPage() {
   return (
